@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Explore different dog breeds with images and information">
+  <title>Dog Breeds Gallery</title>
+
+ 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js" defer></script>
+
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --secondary-color: #EA4C89;
+      --secondary-hover: #F082AC;
+      --accent-color: #FF4433;
+      --text-color: #333;
+      --light-bg: #f5f5f5;
+      --card-bg: #fff;
+      --error-color: #d9534f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--light-bg);
+      transition: background-color 0.5s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+  
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+    }
+
+    .btn-primary:hover, 
+    .btn-primary:focus {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary-color);
+    }
+
+    .btn-secondary:hover, 
+    .btn-secondary:focus {
+      background-color: var(--secondary-hover);
+    }
+
+    .btn-danger {
+      background-color: #f44336;
+    }
+
+    .btn-danger:hover,
+    .btn-danger:focus {
+      background-color: #d32f2f;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+  
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+   
+    nav {
+      background-color: var(--accent-color);
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+      background-color: rgba(255, 255, 255, 0.2);
+      outline: none;
+    }
+
+  
+    .swiper-container {
+      width: 100%;
+      max-width: 600px;
+      height: 350px;
+      margin: 0 auto 2rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+   
+    .breed-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem auto;
+      justify-content: center;
+      max-width: 800px;
+    }
+
+    
+    .breed-info {
+      padding: 1.5rem;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      margin: 1rem auto;
+      max-width: 800px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: none; /* Initially hidden */
+    }
+
+    .breed-info h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+    }
+
+    .breed-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .detail-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-label {
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+   
+    .status-message {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .loading {
+      color: #666;
+    }
+
+    .error {
+      color: var(--error-color);
+    }
+
+  
+    .audio-controls {
+      width: 100%;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: var(--card-bg);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .audio-controls h3 {
+      margin-top: 0;
+      color: var(--text-color);
+    }
+
+    .audio-controls ul {
+      padding-left: 1.5rem;
+    }
+
+    .audio-controls li {
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+ 
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #000;
+      color: white;
+      padding: 8px;
+      z-index: 100;
+      transition: top 0.3s;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    
+    button:focus,
+    a:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+
+    
+    @media (max-width: 768px) {
+      .swiper-container {
+        height: 300px;
+      }
+      
+      .breed-details {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+ 
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header>
+    <h1>INST377 - Assignment 2</h1>
+  </header>
+    <nav aria-label="Main navigation">
+      <ul class="nav-list">
+        <li><a href="home.html" class="nav-link">Home</a></li>
+        <li><a href="stocks.html" class="nav-link">Stocks</a></li>
+        <li><a href="dogs.html" class="nav-link" aria-current="page">Dogs</a></li>
+      </ul>
+    </nav>
+    <h2>🐶  Dog page 🐶</h2>
+  
+  <main id="main-content" class="container">
+ 
+    <div class="swiper-container">
+      <div class="swiper-wrapper" id="carouselWrapper">
+        <div class="status-message loading">Loading dog images...</div>
+      </div>
+    
+      <div class="swiper-button-next" aria-label="Next image"></div>
+      <div class="swiper-button-prev" aria-label="Previous image"></div>
+    </div>
+
+   
+    <div class="breed-buttons" id="breedButtons">
+      <div class="status-message loading">Loading breeds...</div>
+    </div>
+
+
+    <section class="breed-info" id="breedInfo" aria-live="polite">
+      <h2 id="breedName"></h2>
+      <div class="breed-details">
+        <div class="detail-item">
+          <span class="detail-label">Description:</span>
+          <p id="breedDesc"></p>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Life Span:</span>
+          <p id="breedLife"></p>
+        </div>
+      </div>
+    </section>
+
+  
+    <section class="audio-controls">
+      <h3>Voice Navigation Controls</h3>
+      <p>You can control this page using voice commands. Make sure your microphone is enabled.</p>
+      <ul>
+        <li><strong>"Hello"</strong> - Shows a greeting message</li>
+        <li><strong>"Change the color to [color]"</strong> - Changes page background color</li>
+        <li><strong>"Navigate to [page]"</strong> - Goes to another page (home, stocks, dogs)</li>
+        <li><strong>"Show [breed]"</strong> - Displays information about the specified dog breed</li>
+      </ul>
+      <div class="btn-group">
+        <button id="audioOnBtn" class="btn btn-primary">Turn On Voice Control</button>
+        <button id="audioOffBtn" class="btn btn-danger" disabled>Turn Off Voice Control</button>
+      </div>
+      <div id="micStatus" class="status-message" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+   
+    document.addEventListener('DOMContentLoaded', function() {
+   
+      const carouselWrapper = document.getElementById('carouselWrapper');
+      const breedButtons = document.getElementById('breedButtons');
+      const breedInfo = document.getElementById('breedInfo');
+      const breedName = document.getElementById('breedName');
+      const breedDesc = document.getElementById('breedDesc');
+      const breedLife = document.getElementById('breedLife');
+      const audioOnBtn = document.getElementById('audioOnBtn');
+      const audioOffBtn = document.getElementById('audioOffBtn');
+      const micStatus = document.getElementById('micStatus');
+      
+      let swiper;
+      let allBreeds = [];
+
+    
+      initApp();
+
+      async function initApp() {
+        await loadDogImages();
+        await loadBreedButtons();
+        setupVoiceControls();
+      }
+
+      
+      async function loadDogImages() {
+        try {
+          const res = await fetch('https://dog.ceo/api/breeds/image/random/10');
+          if (!res.ok) throw new Error('Network response was not ok');
+          
+          const data = await res.json();
+          displayCarouselImages(data.message);
+        } catch (err) {
+          console.error('Error loading dog images:', err);
+          showError(carouselWrapper, 'Could not load dog images. Please try again later.');
+        }
+      }
+
+      function displayCarouselImages(images) {
+        carouselWrapper.innerHTML = images.map(url => `
+          <div class="swiper-slide" role="group" aria-label="Dog image">
+            <img src="${url}" alt="Random dog" loading="lazy">
+          </div>
+        `).join('');
+
+      
+        swiper = new Swiper('.swiper-container', {
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+          loop: true,
+          a11y: {
+            prevSlideMessage: 'Previous slide',
+            nextSlideMessage: 'Next slide',
+          }
+        });
+      }
+
+  
+      async function loadBreedButtons() {
+        try {
+          const res = await fetch('https://dogapi.dog/api/v2/breeds');
+          if (!res.ok) throw new Error('Network response was not ok');
+          
+          const data = await res.json();
+          allBreeds = data.data;
+          displayBreedButtons();
+        } catch (err) {
+          console.error('Error loading breeds:', err);
+          showError(breedButtons, 'Could not load dog breeds. Please try again later.');
+        }
+      }
+
+      function displayBreedButtons() {
+        breedButtons.innerHTML = '';
+        allBreeds.forEach(breed => {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-primary';
+          btn.textContent = breed.attributes.name;
+          btn.addEventListener('click', () => showBreedInfo(breed));
+          breedButtons.appendChild(btn);
+        });
+      }
+
+  
+      function showBreedInfo(breed) {
+        const attributes = breed.attributes;
+        
+        breedName.textContent = attributes.name;
+        breedDesc.textContent = attributes.description || 'No description available';
+        breedLife.textContent = `${attributes.life.min || 'N/A'} - ${attributes.life.max || 'N/A'} years`;
+        
+        breedInfo.style.display = 'block';
+        breedInfo.scrollIntoView({ behavior: 'smooth' });
+      }
+
+   
+      function showError(container, message) {
+        container.innerHTML = `<div class="status-message error">${message}</div>`;
+      }
+
+ 
+      function setupVoiceControls() {
+        if (!annyang) {
+          console.warn("Annyang not loaded");
+          audioOnBtn.disabled = true;
+          audioOffBtn.disabled = true;
+          micStatus.textContent = "Voice control not available in your browser";
+          return;
+        }
+
+     
+        const currentPage = window.location.pathname.split('/').pop().replace('.html', '').toLowerCase();
+
+        const commands = {
+          'hello': () => {
+            alert('Hello! Welcome to the Dog Breed Information page.');
+          },
+          'change the color to :color': (color) => {
+            document.body.style.backgroundColor = color.toLowerCase();
+          },
+          'navigate to :page': (page) => {
+            const targetPage = page.toLowerCase();
+            if (targetPage !== currentPage && ['home', 'stocks', 'dogs'].includes(targetPage)) {
+              window.location.href = targetPage + '.html';
+            }
+          },
+          'show :breed': (breed) => {
+            const normalizedBreed = breed.toLowerCase();
+            const foundBreed = allBreeds.find(b => 
+              b.attributes.name.toLowerCase() === normalizedBreed
+            );
+            
+            if (foundBreed) {
+              showBreedInfo(foundBreed);
+            } else {
+              alert(`Sorry, we don't have information about ${breed}. Try another breed.`);
+            }
+          },
+          'list breeds': () => {
+            breedButtons.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+
+        annyang.addCommands(commands);
+        
+    
+        function turnOnVoiceControl() {
+          annyang.start({
+            autoRestart: true,
+            continuous: false
+          });
+          audioOnBtn.disabled = true;
+          audioOffBtn.disabled = false;
+          micStatus.textContent = "Voice control is active. Try saying 'hello' to test.";
+          console.log("Voice control turned on");
+        }
+        
+        function turnOffVoiceControl() {
+          annyang.abort();
+          audioOnBtn.disabled = false;
+          audioOffBtn.disabled = true;
+          micStatus.textContent = "Voice control is turned off";
+          console.log("Voice control turned off");
+        }
+        
+       
+        turnOnVoiceControl();
+        
+     
+        audioOnBtn.addEventListener('click', turnOnVoiceControl);
+        audioOffBtn.addEventListener('click', turnOffVoiceControl);
+        
+        
+        annyang.addCallback('result', (phrases) => {
+          console.log("User said:", phrases[0]);
+        });
+        
+        annyang.addCallback('error', (err) => {
+          console.error("Speech recognition error:", err);
+          if (err.error === 'network') {
+            micStatus.textContent = "Network error occurred with voice recognition";
+          } else if (err.error === 'permission blocked') {
+            micStatus.textContent = "Microphone access was denied. Please enable it in your browser settings.";
+            turnOffVoiceControl();
+          }
+        });
+        
+        annyang.addCallback('start', () => {
+          micStatus.textContent = "Listening for commands...";
+        });
+      }
+    });
+  </script>
+</body>
+</html>
